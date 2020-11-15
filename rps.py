@@ -25,7 +25,7 @@ def detect(img: np.ndarray) -> Tuple[np.ndarray, Shape]:
     # img = cv.merge((R,G,B))
 
     rn = cv.blur(img, (5, 5))
-    cv.imshow("1. blur", rn)
+    # cv.imshow("1. blur", rn)
 
     hsv = cv.cvtColor(rn, cv.COLOR_BGR2HSV)
     lower = np.array([0, 30, 90], dtype="uint8")
@@ -33,7 +33,7 @@ def detect(img: np.ndarray) -> Tuple[np.ndarray, Shape]:
     skin_region_hsv = cv.inRange(hsv, lower, upper)
 
     blurred = cv.medianBlur(skin_region_hsv, 5)
-    cv.imshow("2. medianBlur", blurred)
+    # cv.imshow("2. medianBlur", blurred)
 
     contours, hierarchy = cv.findContours(blurred, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
     contours = max(contours, key=lambda x: cv.contourArea(x))
