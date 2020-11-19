@@ -14,7 +14,8 @@ class Shape(Enum):
 
 
 def detect(img: np.ndarray) -> Tuple[np.ndarray, Shape]:
-    img = cv.resize(img, (720, 480))
+    # img = cv.resize(img, (720, 480))
+    img = cv.resize(img, None, fx=0.5, fy=0.5)
     img: np.ndarray
 
     # clahe = cv.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
@@ -37,7 +38,8 @@ def detect(img: np.ndarray) -> Tuple[np.ndarray, Shape]:
 
     contours, hierarchy = cv.findContours(blurred, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
     contours = max(contours, key=lambda x: cv.contourArea(x))
-    cv.drawContours(img, [contours], -1, (0, 255, 0), 2)
+    epsilon = 0.005 * cv.arcLength(contours, False)
+    cv.drawContours(img, [cv.approxPolyDP(contours, epsilon, True)], -1, (0, 255, 0), 2)
 
     hull = cv.convexHull(contours)
     cv.drawContours(img, [hull], -1, (0, 0, 0), 2)
@@ -81,7 +83,16 @@ while camera.isOpened():
     # noinspection PyBroadException
     try:
         cap, shape = detect(cap)
-        cv.putText(cap, str(shape).split(".")[1], (0, 50), cv.FONT_HERSHEY_SIMPLEX, 2, (0, 0, 255), 4, cv.LINE_AA)
+        cv.putText(
+            cap,
+            str(shape).split(".")[1],
+            (0, 50),
+            cv.FONT_HERSHEY_SIMPLEX,
+            2,
+            (0, 0, 255),
+            4,
+            cv.LINE_AA,
+        )
     except Exception:
         pass
 
@@ -90,12 +101,21 @@ while camera.isOpened():
     if cv.waitKey(1) & 0xFF == ord("q"):
         break
 else:
-    im = cv.imread("images/paper.jpg")
+    im = cv.imread("images/paper_with_background.jpg")
     import time
 
     start_time = time.time()
     im, sh = detect(im)
-    cv.putText(im, str(sh).split(".")[1], (0, 50), cv.FONT_HERSHEY_SIMPLEX, 2, (0, 0, 255), 4, cv.LINE_AA)
+    cv.putText(
+        im,
+        str(sh).split(".")[1],
+        (0, 50),
+        cv.FONT_HERSHEY_SIMPLEX,
+        2,
+        (0, 0, 255),
+        4,
+        cv.LINE_AA,
+    )
     end_time = time.time()
     cv.imshow("2020 Kanggo Storm - Rock Paper Scissors!", im)
     cv.waitKey()
