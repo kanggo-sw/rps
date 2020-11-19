@@ -37,6 +37,7 @@ def detect(img: np.ndarray) -> Tuple[np.ndarray, Shape]:
 
     kernel = np.ones((8, 8), np.uint8)
     morphed = cv.morphologyEx(blurred, cv.MORPH_CLOSE, kernel)
+    morphed = cv.medianBlur(morphed, 5)
 
     contours, hierarchy = cv.findContours(morphed, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
     contours = max(contours, key=lambda x: cv.contourArea(x))
@@ -102,7 +103,7 @@ while camera.isOpened():
     if cv.waitKey(1) & 0xFF == ord("q"):
         break
 else:
-    im = cv.imread("images/paper_with_background.jpg")
+    im = cv.imread("images/rock.jpg")
     import time
 
     start_time = time.time()
