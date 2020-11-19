@@ -38,11 +38,12 @@ def detect(img: np.ndarray) -> Tuple[np.ndarray, Shape]:
 
     contours, hierarchy = cv.findContours(blurred, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
     contours = max(contours, key=lambda x: cv.contourArea(x))
-    epsilon = 0.005 * cv.arcLength(contours, False)
-    cv.drawContours(img, [cv.approxPolyDP(contours, epsilon, True)], -1, (0, 255, 0), 2)
+    epsilon = 0.0075 * cv.arcLength(contours, True)
+    contours = cv.approxPolyDP(contours, epsilon, True)
+    cv.drawContours(img, [contours], -1, (0, 255, 0), 2)
 
-    hull = cv.convexHull(contours)
-    cv.drawContours(img, [hull], -1, (0, 0, 0), 2)
+    # hull = cv.convexHull(contours)
+    # cv.drawContours(img, [hull], -1, (0, 0, 0), 2)
     hull = cv.convexHull(contours, returnPoints=False)
     defects = cv.convexityDefects(contours, hull)
 
