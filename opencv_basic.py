@@ -14,7 +14,8 @@ class Shape(Enum):
 
 
 def detect(img: np.ndarray) -> Tuple[np.ndarray, Shape]:
-    img = cv.resize(img, (720, 480))
+    # img = cv.resize(img, (720, 480))
+    img = cv.resize(img, None, fx=0.5, fy=0.5)
     img: np.ndarray
 
     # clahe = cv.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
@@ -99,7 +100,7 @@ while camera.isOpened():
     if cv.waitKey(1) & 0xFF == ord("q"):
         break
 else:
-    im = cv.imread("images/paper.jpg")
+    im = cv.imread("images/paper_with_background.jpg")
     import time
 
     start_time = time.time()

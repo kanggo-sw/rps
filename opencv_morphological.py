@@ -36,12 +36,21 @@ def detect(img: np.ndarray) -> Tuple[np.ndarray, Shape]:
     blurred = cv.medianBlur(skin_region_hsv, 5)
 
     kernel = np.ones((8, 8), np.uint8)
-    morphed = cv.morphologyEx(blurred, cv.MORPH_CLOSE, kernel)
+    morphed = cv.morphologyEx(blurred, cv.MORPH_DILATE, kernel)
     morphed = cv.medianBlur(morphed, 5)
 
     contours, hierarchy = cv.findContours(morphed, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
     contours = max(contours, key=lambda x: cv.contourArea(x))
     cv.drawContours(img, [contours], -1, (0, 255, 0), 2)
+
+    # Apply approxPolyDP
+    """
+    contours, hierarchy = cv.findContours(morphed, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
+    contours = max(contours, key=lambda x: cv.contourArea(x))
+    epsilon = 0.0075 * cv.arcLength(contours, True)
+    contours = cv.approxPolyDP(contours, epsilon, True)
+    cv.drawContours(img, [contours], -1, (0, 255, 0), 2)
+    """
 
     hull = cv.convexHull(contours)
     cv.drawContours(img, [hull], -1, (0, 0, 0), 2)
